@@ -1,0 +1,12 @@
+REVOKE ALL ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.participantes_before_write() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.indicacoes_before_write() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.indicacoes_after_write() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.recalcular_status_premio(uuid) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.recalcular_status_premio(uuid) TO service_role;
+REVOKE ALL ON FUNCTION public.has_role(uuid, public.app_role) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.normalizar_nome(text) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.normalizar_telefone(text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.normalizar_nome(text) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.normalizar_telefone(text) TO authenticated, service_role;

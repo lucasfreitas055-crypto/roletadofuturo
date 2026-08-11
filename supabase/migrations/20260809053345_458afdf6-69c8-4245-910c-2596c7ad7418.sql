@@ -1,0 +1,1 @@
+ALTER TYPE public.interesse_matricula_tipo ADD VALUE IF NOT EXISTS 'NAO';
