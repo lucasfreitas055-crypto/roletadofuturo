@@ -20,14 +20,12 @@ export const listarParticipantesPublico = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data }) => {
-    // Extrato precisa refletir o evento onde as gravações estão indo AGORA
-    // (que muda quando Modo Teste está ligado), não apenas o evento oficial.
+    // Sempre lê do evento oficial ATIVO — igual ao LiveScoreboard da HomeScreen.
+    // (O modo de teste foi removido da UI; a defesa antiga causava divergência.)
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { resolverEventoIdParaGravacao } = await import("@/database/modo-teste.server");
     const { garantirEventoAtivoId } = await import("@/database/evento-atual.server");
 
-    const eventoIdTeste = await resolverEventoIdParaGravacao();
-    const eventoId = eventoIdTeste ?? (await garantirEventoAtivoId());
+    const eventoId = await garantirEventoAtivoId();
 
     let query = supabaseAdmin
       .from("participantes")
@@ -130,12 +128,11 @@ export const listarIndicadosPublico = createServerFn({ method: "POST" })
     busca: input?.busca ?? null,
   }))
   .handler(async ({ data }) => {
+    // Sempre lê do evento oficial ATIVO (mesma fonte do LiveScoreboard).
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { resolverEventoIdParaGravacao } = await import("@/database/modo-teste.server");
     const { garantirEventoAtivoId } = await import("@/database/evento-atual.server");
 
-    const eventoIdTeste = await resolverEventoIdParaGravacao();
-    const eventoId = eventoIdTeste ?? (await garantirEventoAtivoId());
+    const eventoId = await garantirEventoAtivoId();
 
     let query = supabaseAdmin
       .from("indicacoes")
@@ -187,11 +184,9 @@ export const obterConfiguracoesPublico = createServerFn({ method: "GET" }).handl
 export const listarParticipantesPorEquipePublico = createServerFn({ method: "GET" }).handler(
   async () => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { resolverEventoIdParaGravacao } = await import("@/database/modo-teste.server");
     const { garantirEventoAtivoId } = await import("@/database/evento-atual.server");
 
-    const eventoIdTeste = await resolverEventoIdParaGravacao();
-    const eventoId = eventoIdTeste ?? (await garantirEventoAtivoId());
+    const eventoId = await garantirEventoAtivoId();
 
     const { data, error } = await supabaseAdmin
       .from("participantes")
@@ -218,7 +213,6 @@ export const lancarPontosExtrasPublico = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { resolverEventoIdParaGravacao } = await import("@/database/modo-teste.server");
     const { garantirEventoAtivoId } = await import("@/database/evento-atual.server");
 
     const atividade = data.atividade.trim();
@@ -226,8 +220,7 @@ export const lancarPontosExtrasPublico = createServerFn({ method: "POST" })
     if (atividade.length < 2) return { ok: false, mensagem: "Nome da atividade é obrigatório." };
     if (data.lancamentos.length === 0) return { ok: false, mensagem: "Nada a lançar." };
 
-    const eventoIdTeste = await resolverEventoIdParaGravacao();
-    const eventoId = eventoIdTeste ?? (await garantirEventoAtivoId());
+    const eventoId = await garantirEventoAtivoId();
 
     const linhas = data.lancamentos
       .filter((l) => l.pontos > 0)
@@ -251,11 +244,9 @@ export const lancarPontosExtrasPublico = createServerFn({ method: "POST" })
 
 export const listarPontosExtrasPublico = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { resolverEventoIdParaGravacao } = await import("@/database/modo-teste.server");
   const { garantirEventoAtivoId } = await import("@/database/evento-atual.server");
 
-  const eventoIdTeste = await resolverEventoIdParaGravacao();
-  const eventoId = eventoIdTeste ?? (await garantirEventoAtivoId());
+  const eventoId = await garantirEventoAtivoId();
 
   const { data, error } = await supabaseAdmin
     .from("pontos_extras" as never)

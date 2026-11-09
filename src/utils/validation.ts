@@ -81,6 +81,7 @@ export const questRespostasSchema = z.object({
   speedFactor: z.number().min(0).max(1),
   accuracyFactor: z.number().min(0).max(1),
   score: z.number().min(0).max(1),
+  totalQuestoes: z.number().int().min(1).max(20).optional(),
   respostas: z
     .array(
       z.object({

@@ -14,6 +14,7 @@ import {
 } from "@/lib/extrato.functions";
 import { cn } from "@/lib/utils";
 import type { EquipeCodigo, Participante } from "@/types/database.types";
+import { exportarExcel } from "@/utils/export";
 
 import { AdminGate } from "@/components/admin/AdminGate";
 
@@ -201,6 +202,54 @@ function ParticipantesPage() {
             </p>
           </div>
           <div className="no-print flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const dados = linhas.map((p) => ({
+                  nome: p.nome,
+                  idade: p.idade_aluno ?? "",
+                  equipe: getEquipeConfig(p.equipe as EquipeCodigo).nome,
+                  responsavel: p.responsavel_nome ?? "",
+                  whatsapp: p.responsavel_whatsapp ?? "",
+                  interesse_aula:
+                    p.interesse_matricula === "SIM"
+                      ? "Sim"
+                      : p.interesse_matricula === "QUERO_SABER_MAIS"
+                        ? "Quer saber mais"
+                        : p.interesse_matricula === "TALVEZ_DEPOIS"
+                          ? "Talvez depois"
+                          : p.interesse_matricula === "NAO"
+                            ? "Não"
+                            : "",
+                  valido: p.participacao_valida ? "Sim" : "Não",
+                  pontos: formatarPontos(
+                    Number(
+                      (p as Participante & { total_score?: number }).total_score ?? 0,
+                    ),
+                  ),
+                  cadastrado_em: new Date(p.created_at).toLocaleString("pt-BR"),
+                }));
+                exportarExcel(
+                  dados,
+                  [
+                    { chave: "nome", titulo: "Nome do aluno" },
+                    { chave: "idade", titulo: "Idade" },
+                    { chave: "equipe", titulo: "Equipe" },
+                    { chave: "responsavel", titulo: "Responsável" },
+                    { chave: "whatsapp", titulo: "WhatsApp" },
+                    { chave: "interesse_aula", titulo: "Interesse aula" },
+                    { chave: "valido", titulo: "Válido" },
+                    { chave: "pontos", titulo: "Pontos" },
+                    { chave: "cadastrado_em", titulo: "Cadastrado em" },
+                  ],
+                  `participantes-${new Date().toISOString().slice(0, 10)}`,
+                );
+              }}
+              disabled={linhas.length === 0}
+              className="rounded-xl bg-green-600 px-4 py-2 text-xs font-black uppercase tracking-widest text-white shadow-md transition-colors hover:opacity-90 disabled:opacity-40"
+            >
+              📊 Exportar Excel
+            </button>
             <button
               type="button"
               onClick={() => window.print()}

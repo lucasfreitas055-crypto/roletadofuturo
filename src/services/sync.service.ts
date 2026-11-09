@@ -59,6 +59,7 @@ const EXECUTORES = {
         speedFactor: Number(p["speedFactor"] ?? 0),
         accuracyFactor: Number(p["accuracyFactor"] ?? 0),
         score: Number(p["score"] ?? 0),
+        totalQuestoes: Number(p["totalQuestoes"] ?? 0) || undefined,
         respostas: (p["respostas"] as RespostaQuestPayload[] | undefined) ?? [],
       },
     }),

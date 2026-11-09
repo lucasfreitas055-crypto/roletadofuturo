@@ -79,9 +79,15 @@ export function FinaleScreen({
     onSelect(valor);
   }
 
-  const totalTime = totalEquipe && totalEquipe > 0 ? totalEquipe : resumo.total;
-  const percentual =
-    totalTime > 0 ? Math.min(100, Math.round((resumo.total / totalTime) * 1000) / 10) : 0;
+  // Cada participante pode conquistar no máximo 3 pontos (1 participação +
+  // 1 quest/tempo + 1 indicações). O total da equipe aparece separadamente
+  // no LiveScoreboard; aqui mostramos o quanto o aluno aproveitou do próprio
+  // máximo pessoal.
+  const MAX_POR_PARTICIPANTE = 3;
+  const percentual = Math.min(
+    100,
+    Math.round((resumo.total / MAX_POR_PARTICIPANTE) * 1000) / 10,
+  );
 
   const cartoes = [
     { icone: "", rotulo: "Sua pontuação", valor: `${formatarPontos(resumo.total)} pts` },
@@ -176,8 +182,12 @@ export function FinaleScreen({
           />
         </div>
         <p className="mt-2 text-center text-sm font-semibold text-muted-foreground">
-          Você ajudou sua equipe com {formatarPontos(resumo.total)} pontos de um total de{" "}
-          {formatarPontos(totalTime)}.
+          Você conquistou {formatarPontos(resumo.total)} de 3 pontos possíveis
+          {totalEquipe && totalEquipe > 0 ? (
+            <> — sua equipe já soma {formatarPontos(totalEquipe)} pontos.</>
+          ) : (
+            <>.</>
+          )}
         </p>
 
         <div className="mt-4 grid grid-cols-3 gap-2 border-t border-border pt-3">

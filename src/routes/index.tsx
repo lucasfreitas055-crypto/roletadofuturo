@@ -311,6 +311,7 @@ function RoletaDoFuturo() {
       speedFactor: resultado.speedFactor,
       accuracyFactor: resultado.accuracyFactor,
       score: resultado.score,
+      totalQuestoes: questoes.length,
       respostas,
     });
     setSalvandoQuest(false);

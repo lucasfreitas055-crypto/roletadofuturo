@@ -90,6 +90,8 @@ export interface QuestInput {
   speedFactor: number;
   accuracyFactor: number;
   score: number;
+  /** Total de questões da rodada (pode ser 4 em rodadas curtas ou 10 no padrão). */
+  totalQuestoes?: number | undefined;
   respostas: RespostaQuestInput[];
 }
 
@@ -100,10 +102,11 @@ export interface QuestInput {
 export async function salvarQuest(
   input: QuestInput,
 ): Promise<{ ok: boolean; score: number; mensagem: string }> {
+  const total = Math.max(Math.round(input.totalQuestoes ?? input.respostas.length ?? 10), 1);
   const tempo = Math.min(Math.max(Math.round(input.tempoSegundos), 0), QUEST_SEGUNDOS);
-  const acertos = Math.min(Math.max(Math.round(input.acertos), 0), 10);
+  const acertos = Math.min(Math.max(Math.round(input.acertos), 0), total);
   const speedFactor = Math.round(((QUEST_SEGUNDOS - tempo) / QUEST_SEGUNDOS) * 100) / 100;
-  const accuracyFactor = Math.round((acertos / 10) * 100) / 100;
+  const accuracyFactor = Math.round((acertos / total) * 100) / 100;
   const score = Math.min(
     Math.max(Math.round(speedFactor * accuracyFactor * 100) / 100, 0),
     MAX_PONTOS_QUEST,
